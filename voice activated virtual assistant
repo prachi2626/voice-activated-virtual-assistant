@@ -1,159 +1,140 @@
 # *Importing necessary libraries*
-import speech_recognition as sr
-# *For recognizing speech input from the microphone*
-import pyttsx3                   
-# *For text-to-speech functionality*
-import datetime                  
-# *For working with dates and time*
-import webbrowser
-# *To open websites in a browser*
-import os
-# *To access the file system (for playing music)*
-import time                      
-# *For adding delays between commands*
+import speech_recognition as sr             # For recognizing speech input from the microphone
+import pyttsx3                              # For text-to-speech functionality
+import datetime                             # For working with dates and time
+import webbrowser                           # To open websites in a browser
+import os                                   # To access the file system (for playing music)
+import time                                 # For adding delays between commands
 
 # *Initialize speech recognizer and text-to-speech engine*
-r = sr.Recognizer()              
-# *Create a Recognizer instance for speech recognition*
-engine = pyttsx3.init()          
-# *Initialize the pyttsx3 text-to-speech engine*
-voices = engine.getProperty('voices')  
-# *Get list of available system voices*
-# engine.setProperty('voice', voices[1].id)  
-# *Optional: Use a different voice*
+r = sr.Recognizer()                         # Create a Recognizer instance for speech recognition
+engine = pyttsx3.init()                     # Initialize the pyttsx3 text-to-speech engine
+voices = engine.getProperty('voices')       # Get list of available system voices
+# engine.setProperty('voice', voices[1].id)  # Optional: Use a different voice
 
 # *Function to speak text aloud*
 def speak(text):
-engine.say(text)   # *Queue text for speech*
-engine.runAndWait()   # *Speak the queued text*
+    engine.say(text)              # Queue text for speech
+    engine.runAndWait()           # Speak the queued text
 
 # *Function to greet the user based on the time of day*
 def wish_me():
     hour = datetime.datetime.now().hour
     if 0 <= hour < 12:
-speak("Good Morning!")
-elif 12 <= hour < 18:
-speak("Good Afternoon!")
+        speak("Good Morning!")
+    elif 12 <= hour < 18:
+        speak("Good Afternoon!")
     else:
-speak("Good Evening!")
-speak("I am your virtual assistant. How can I help you today?")
+        speak("Good Evening!")
+    speak("I am your virtual assistant. How can I help you today?")
 
 # *Function to listen and convert voice to text*
 def take_command():
     try:
-        with sr.Microphone() as source:   
-# *Use microphone as input*
-print("Listening...")
-r.pause_threshold = 1         
-# *Adjusts for silence between phrases*
-            audio = r.listen(source)      
-# *Listen to audio from the user*
+        with sr.Microphone() as source:       # Use microphone as input
+            print("Listening...")
+            r.pause_threshold = 1             # Adjusts for silence between phrases
+            audio = r.listen(source)          # Listen to audio from the user
     except sr.WaitTimeoutError:
-print("No speech detected for too long.")
+        print("No speech detected for too long.")
         return ""
     except sr.RequestError as e:
-print(f"Speech Recognition service error: {e}")
+        print(f"Speech Recognition service error: {e}")
         return ""
     except sr.UnknownValueError:
-print("Could not understand audio.")
+        print("Could not understand audio.")
         return ""
 
     try:
-print("Recognizing...")
-        query = r.recognize_google(audio, language='en-in')  
-# *Use Google's API to recognize English (India)*
-print(f"User said: {query}\n")
+        print("Recognizing...")
+        query = r.recognize_google(audio, language='en-in')  # Use Google's API to recognize English (India)
+        print(f"User said: {query}\n")
     except Exception:
-print("Say that again please...")
+        print("Say that again please...")
         return ""
-    return query.lower()  # *Return recognized text in lowercase*
+
+    return query.lower()  # Return recognized text in lowercase
 
 # *Open a website*
 def open_website(url):
-webbrowser.open(url)         
-# *Open the URL in the default browser*
-speak(f"Opening {url}")
+    webbrowser.open(url)              # Open the URL in the default browser
+    speak(f"Opening {url}")
 
 # *Play music from your system*
 def play_music(song_name=""):
-music_dir = 'C:\\Users\\YourUsername\\Music'  
-# Change this to your music folder*
-    songs = os.listdir(music_dir) 
- # *List all files in music directory*
+    music_dir = 'C:\\Users\\YourUsername\\Music'  # Change this to your music folder
+    songs = os.listdir(music_dir)                # List all files in music directory
     if songs:
         if song_name:
             found = False
             for song in songs:
                 if song_name.lower() in song.lower():
-os.startfile(os.path.join(music_dir, song))  # *Play the song*
-speak(f"Playing {song}")
+                    os.startfile(os.path.join(music_dir, song))  # Play the song
+                    speak(f"Playing {song}")
                     found = True
                     break
             if not found:
-speak(f"Sorry, I couldn't find a song with '{song_name}' in your music library.")
+                speak(f"Sorry, I couldn't find a song with '{song_name}' in your music library.")
         else:
-speak("Playing a random song.")
-os.startfile(os.path.join(music_dir, songs[0]))  
-# *Play the first song*
+            speak("Playing a random song.")
+            os.startfile(os.path.join(music_dir, songs[0]))  # Play the first song
     else:
-speak("Your music library is empty.")
+        speak("Your music library is empty.")
 
 # *Speak current time*
 def tell_time():
-strTime = datetime.datetime.now().strftime("%H:%M:%S")
-speak(f"The time is {strTime}")
+    strTime = datetime.datetime.now().strftime("%H:%M:%S")
+    speak(f"The time is {strTime}")
 
 # *Speak current date*
 def tell_date():
     today = datetime.date.today().strftime("%d %B, %Y")
-speak(f"Today's date is {today}")
+    speak(f"Today's date is {today}")
 
 # *Search on Google*
 def search_google(query):
-search_url = f"https://www.google.com/search?q={query}"
-open_website(search_url)
+    search_url = f"https://www.google.com/search?q={query}"
+    open_website(search_url)
 
 # *Main function to process voice commands*
 def handle_commands(query):
     if 'open youtube' in query:
-open_website("https://www.youtube.com")
-elif 'open google' in query:
-open_website("https://www.google.com")
-elif 'play music' in query:
-speak("Do you want me to play a specific song?")
-song_choice = take_command()
+        open_website("https://www.youtube.com")
+    elif 'open google' in query:
+        open_website("https://www.google.com")
+    elif 'play music' in query:
+        speak("Do you want me to play a specific song?")
+        song_choice = take_command()
         if 'yes' in song_choice:
-speak("Which song would you like me to play?")
-song_name = take_command()
+            speak("Which song would you like me to play?")
+            song_name = take_command()
             if song_name:
-play_music(song_name)
+                play_music(song_name)
         else:
-play_music()
-elif 'the time' in query:
-tell_time()
-elif 'the date' in query:
-tell_date()
-elif 'search for' in query:
+            play_music()
+    elif 'the time' in query:
+        tell_time()
+    elif 'the date' in query:
+        tell_date()
+    elif 'search for' in query:
         query = query.replace("search for", "")
-search_google(query)
-elif 'what is' in query or 'who is' in query:
-search_google(query)
-elif 'exit' in query or 'quit' in query or 'bye' in query:
+        search_google(query)
+    elif 'what is' in query or 'who is' in query:
+        search_google(query)
+    elif 'exit' in query or 'quit' in query or 'bye' in query:
         speak("Goodbye!")
-        return True  # *Exits the loop*
+        return True  # Exits the loop
     else:
-speak("Sorry, I didn't understand that.")
+        speak("Sorry, I didn't understand that.")
     return False
 
 # *Main program starts here*
 if __name__ == "__main__":
-wish_me()  # *Greet the user*
+    wish_me()  # Greet the user
 
     while True:
-        query = take_command()  # *Listen for voice command*
+        query = take_command()  # Listen for voice command
         if query:
-            if handle_commands(query):  
-# *Process the command*
+            if handle_commands(query):  # Process the command
                 break
-time.sleep(1)  # *Add delay to reduce CPU usage*
-
+        time.sleep(1)  # Add delay to reduce CPU usage
